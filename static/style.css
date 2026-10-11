@@ -1,0 +1,413 @@
+:root {
+  --bg: #0e1118;
+  --bg-alt: #171c27;
+  --bg-self-a: #3b82f6;
+  --bg-self-b: #2563eb;
+  --bg-other: #222835;
+  --fg: #e7ecf3;
+  --muted: #8b97a8;
+  --accent: #4c9aff;
+  --accent-2: #22d3ee;
+  --border: #2a3140;
+  --radius: 14px;
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --speed: 0.18s;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+}
+
+/* Многослойный градиентный фон: холодное свечение сверху,
+   тёплое снизу, фиолетовое пятно по центру. */
+body {
+  background: var(--bg);
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(56, 118, 255, 0.20), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(34, 211, 238, 0.13), transparent 65%),
+    radial-gradient(circle 45% 38% at 15% 55%, rgba(139, 92, 246, 0.13), transparent 70%),
+    linear-gradient(180deg, #131826 0%, #0e1118 55%, #0c1016 100%);
+}
+
+body > * { position: relative; z-index: 1; }
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100dvh;
+}
+
+.hidden { display: none !important; }
+
+/* ---------- Шапка и нижняя панель: стеклянный эффект ---------- */
+
+.topbar,
+.composer {
+  background: linear-gradient(
+    180deg,
+    rgba(38, 46, 63, 0.72),
+    rgba(20, 25, 35, 0.72)
+  );
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.banner {
+  background: linear-gradient(90deg, #b45309, #d97706, #b45309);
+  color: #fff4e0;
+  text-align: center;
+  padding: 7px;
+  font-size: 14px;
+  animation: slide-down 0.25s ease;
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.brand {
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.3px;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.typing {
+  color: var(--accent-2);
+  font-size: 13px;
+  min-height: 16px;
+  transition: opacity var(--speed) ease;
+}
+
+.presence {
+  color: var(--muted);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Поля ввода ---------- */
+
+.name-input,
+.text-input {
+  background: rgba(10, 13, 20, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--fg);
+  transition: border-color var(--speed) ease, box-shadow var(--speed) ease,
+              transform var(--speed) ease;
+}
+
+.name-input {
+  padding: 8px 10px;
+  width: 130px;
+}
+
+.name-input:hover,
+.text-input:hover { border-color: #3d4759; }
+
+.name-input:focus,
+.text-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(76, 154, 255, 0.22);
+}
+
+/* ---------- Область сообщений ---------- */
+
+.messages {
+  overflow-y: auto;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #39425a transparent;
+}
+
+.messages::-webkit-scrollbar { width: 8px; }
+.messages::-webkit-scrollbar-thumb {
+  background: #39425a;
+  border-radius: 4px;
+}
+
+.load-more {
+  margin: 0 12px 6px;
+  background: linear-gradient(90deg, rgba(76, 154, 255, 0.16), rgba(34, 211, 238, 0.16));
+  color: #cfe4ff;
+  border: 1px solid rgba(76, 154, 255, 0.35);
+  border-radius: 10px;
+  padding: 9px;
+  cursor: pointer;
+  transition: transform var(--speed) ease, box-shadow var(--speed) ease,
+              background var(--speed) ease;
+}
+
+.load-more:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+}
+
+/* ---------- Пузыри сообщений ---------- */
+
+.msg {
+  max-width: min(78%, 640px);
+  padding: 9px 12px;
+  border-radius: var(--radius);
+  align-self: flex-start;
+  word-break: break-word;
+  animation: pop-in 0.2s ease both;
+  position: relative;
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.msg {
+  background: linear-gradient(
+    180deg,
+    rgba(42, 48, 63, 0.92),
+    rgba(30, 36, 48, 0.92)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-soft);
+}
+
+.msg.self {
+  align-self: flex-end;
+  background: linear-gradient(
+    135deg,
+    var(--bg-self-a) 0%,
+    var(--bg-self-b) 100%
+  );
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-lift), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* Хвостик у своих сообщений */
+.msg.self::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-self-b);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  border-bottom-right-radius: 4px;
+}
+
+.msg .meta-line {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+.msg.self .meta-line { color: rgba(255, 255, 255, 0.82); }
+.msg .sender { font-weight: 600; }
+.msg .time { margin-left: auto; opacity: 0.75; }
+
+.msg .file { margin-top: 6px; }
+
+.msg .file img,
+.msg .file video {
+  max-width: 100%;
+  max-height: 340px;
+  border-radius: 10px;
+  display: block;
+  box-shadow: var(--shadow-soft);
+  transition: transform var(--speed) ease;
+}
+
+.msg .file img:hover { transform: scale(1.015); }
+
+.download-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--fg);
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  min-height: 44px;
+  transition: background var(--speed) ease, transform var(--speed) ease;
+}
+
+.download-link:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateX(2px);
+}
+
+.download-link .size { color: var(--muted); font-size: 12px; }
+
+/* ---------- Панель ввода ---------- */
+
+.composer {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.text-input {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  min-height: 46px;
+}
+
+.btn {
+  min-width: 46px;
+  min-height: 46px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #2b3242, #202634);
+  color: var(--fg);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: transform var(--speed) cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow var(--speed) ease, filter var(--speed) ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+  filter: brightness(1.08);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.9);
+  box-shadow: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn.send {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  color: #06121f;
+  font-weight: 700;
+}
+
+.btn.attach:hover { background: linear-gradient(180deg, #333c50, #262f40); }
+
+/* ---------- Подсказка о drop ---------- */
+
+.drop-hint {
+  position: fixed;
+  inset: 12px;
+  border: 3px dashed var(--accent);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #dbeafe;
+  background: rgba(76, 154, 255, 0.14);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 154, 255, 0.35); }
+  50%      { box-shadow: 0 0 0 14px rgba(76, 154, 255, 0); }
+}
+
+/* ---------- Прогресс загрузки ---------- */
+
+.progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  z-index: 20;
+}
+
+.progress #progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(
+    90deg,
+    var(--accent),
+    var(--accent-2),
+    var(--accent)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s linear infinite;
+  box-shadow: 0 0 12px rgba(76, 154, 255, 0.8);
+  transition: width 0.15s linear;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ---------- Мобильные ---------- */
+
+@media (max-width: 600px) {
+  .msg { max-width: 88%; }
+  .name-input { width: 100px; }
+}
+
+/* Уважаем системную настройку «уменьшить движение» */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

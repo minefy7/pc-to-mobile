@@ -1,0 +1,15 @@
+[Unit]
+Description=Чат (FastAPI over WebSocket)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/magnus/Python/PCtoMobile
+ExecStart=/home/magnus/Python/PCtoMobile/.venv/bin/python run.py --no-browser
+Restart=on-failure
+RestartSec=3
+Environment=CHAT_HOST=0.0.0.0
+
+[Install]
+WantedBy=default.target

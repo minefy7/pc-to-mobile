@@ -1,0 +1,6 @@
+fastapi>=0.118.0,<1.0
+uvicorn>=0.35.0,<1.0
+python-multipart>=0.0.20
+# WebSocket-транспорт для uvicorn. Без него uvicorn отвечает 404 на /ws.
+# Pure-Python (C-расширение опционально), поэтому собирается под 3.14.
+websockets>=14.0

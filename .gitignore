@@ -1,0 +1,22 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Данные чата (не в репозиторий)
+data/chat.db
+data/*.db
+data/*.db-*
+uploads/*
+!uploads/.gitkeep
+
+# Сборка
+dist/
+build/
+*.spec
+
+# Прочее
+.DS_Store
+*.swp
